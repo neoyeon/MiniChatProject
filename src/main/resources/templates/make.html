@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>채팅방 만들기 - TATAOTALK</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background-color: #f2f3f5;
+
+            font-family: Arial, sans-serif;
+            color: #222222;
+        }
+
+
+        /* 전체 화면 */
+        .page {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 40px 20px;
+        }
+
+
+        /* 가운데 흰색 카드 */
+        .room-box {
+            width: 520px;
+
+            padding: 40px;
+
+            background-color: white;
+
+            border-radius: 12px;
+
+            box-shadow:
+                    0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+
+        /* 제목 */
+        .title {
+            margin: 0 0 35px;
+
+            text-align: center;
+
+            font-size: 30px;
+            font-weight: 800;
+
+            color: #222222;
+        }
+
+
+        /* 섹션 */
+        .section {
+            margin-bottom: 28px;
+        }
+
+
+        /* 섹션 제목 */
+        .section-title {
+            margin: 0 0 12px;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            color: #333333;
+        }
+
+
+        /* 채팅방 이름 */
+        .room-name-input {
+            width: 100%;
+            height: 45px;
+
+            padding: 0 12px;
+
+            border: 1px solid #dddddd;
+            border-radius: 6px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        .room-name-input:focus {
+            border-color: #3b82f6;
+        }
+
+
+        /* 채팅방 종류 */
+        .type-container {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .type-option {
+            flex: 1;
+
+            cursor: pointer;
+        }
+
+
+        .type-option input {
+            display: none;
+        }
+
+
+        .type-card {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            height: 55px;
+
+            border: 1px solid #dddddd;
+            border-radius: 7px;
+
+            background-color: #ffffff;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            transition:
+                    border-color 0.2s,
+                    background-color 0.2s;
+        }
+
+
+        /* 선택된 채팅방 종류 */
+        .type-option input:checked + .type-card {
+            border-color: #3b82f6;
+
+            background-color: #eff6ff;
+
+            color: #2563eb;
+        }
+
+
+        /* 친구 검색 */
+        .search-input {
+            width: 100%;
+            height: 42px;
+
+            padding: 0 12px;
+
+            border: 1px solid #dddddd;
+            border-radius: 6px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        .search-input:focus {
+            border-color: #3b82f6;
+        }
+
+
+        /* 친구 목록 */
+        .friend-list {
+            max-height: 220px;
+
+            overflow-y: auto;
+
+            border: 1px solid #eeeeee;
+            border-radius: 7px;
+
+            background-color: #fafafa;
+        }
+
+
+        /* 친구 한 명 */
+        .friend {
+            padding: 13px 15px;
+
+            border-bottom: 1px solid #eeeeee;
+
+            transition: background-color 0.15s;
+        }
+
+
+        .friend:last-child {
+            border-bottom: none;
+        }
+
+
+        .friend:hover {
+            background-color: #f0f4f8;
+        }
+
+
+        .friend label {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+        }
+
+
+        .friend-checkbox {
+            width: 16px;
+            height: 16px;
+
+            accent-color: #3b82f6;
+
+            cursor: pointer;
+        }
+
+
+        .friend-nickname {
+            font-weight: bold;
+        }
+
+
+        .friend-username {
+            color: #888888;
+
+            font-size: 13px;
+        }
+
+
+        /* 선택된 친구 수 */
+        .selected-info {
+            margin-top: 12px;
+
+            padding: 12px;
+
+            border-radius: 6px;
+
+            background-color: #f5f7fa;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            color: #555555;
+        }
+
+
+        .selected-count {
+            color: #3b82f6;
+
+            font-weight: bold;
+        }
+
+
+        /* 버튼 영역 */
+        .button-container {
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 30px;
+        }
+
+
+        /* 공통 버튼 */
+        .button {
+            flex: 1;
+
+            height: 48px;
+
+            border: none;
+            border-radius: 7px;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        /* 만들기 */
+        .create-button {
+            background-color: #3b82f6;
+
+            color: white;
+        }
+
+
+        .create-button:hover {
+            background-color: #2563eb;
+        }
+
+
+        /* 뒤로가기 */
+        .back-button {
+            background-color: #eeeeee;
+
+            color: #444444;
+        }
+
+
+        .back-button:hover {
+            background-color: #e2e2e2;
+        }
+
+        body { background: #f7f8fc; color: #252a38; }
+        .room-box { border: 1px solid #eceef3; border-radius: 20px; box-shadow: 0 18px 60px rgba(37, 43, 59, .08); }
+        .title { letter-spacing: -.8px; }
+        .room-name-input:focus, .search-input:focus { border-color: #8791f1; box-shadow: 0 0 0 3px rgba(89, 105, 233, .09); }
+        .type-option input:checked + .type-card { border-color: #5969e9; background: #f0f1ff; color: #5263e2; }
+        .create-button { background: #5969e9; }
+        .create-button:hover { background: #4657db; }
+        .friend-list { max-height: 260px; }
+        @media (max-width: 560px) {
+            .page { align-items: flex-start; padding: 18px 12px; }
+            .room-box { width: 100%; padding: 26px 20px; }
+            .title { font-size: 25px; margin-bottom: 26px; }
+            .button-container { flex-direction: column-reverse; }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <div class="room-box">
+
+        <h1 class="title">
+            채팅방 만들기
+        </h1>
+
+
+        <form
+                action="/main/room"
+                method="post"
+                id="roomForm"
+        >
+
+
+            <!-- 채팅방 이름 -->
+            <div class="section">
+
+                <h2 class="section-title">
+                    채팅방 이름
+                </h2>
+
+                <input
+                        type="text"
+                        name="name"
+                        class="room-name-input"
+                        placeholder="채팅방 이름을 입력하세요"
+                        required
+                >
+
+            </div>
+
+
+            <!-- 채팅방 종류 -->
+            <div class="section">
+
+                <h2 class="section-title">
+                    채팅방 종류
+                </h2>
+
+                <div class="type-container">
+
+                    <label class="type-option">
+
+                        <input
+                                type="radio"
+                                name="type"
+                                value="DIRECT"
+                                checked
+                                id="directType"
+                        >
+
+                        <span class="type-card">
+                            1:1 채팅
+                        </span>
+
+                    </label>
+
+
+                    <label class="type-option">
+
+                        <input
+                                type="radio"
+                                name="type"
+                                value="GROUP"
+                                id="groupType"
+                        >
+
+                        <span class="type-card">
+                            단체 채팅
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- 친구 선택 -->
+            <div class="section">
+
+                <h2 class="section-title">
+                    친구 선택
+                </h2>
+
+
+                <!-- 친구 검색 -->
+                <input
+                        type="text"
+                        id="friendSearch"
+                        class="search-input"
+                        placeholder="닉네임 또는 아이디로 검색"
+                        autocomplete="off"
+                >
+
+
+                <br>
+                <br>
+
+
+                <!-- 친구 목록 -->
+                <div
+                        id="friendList"
+                        class="friend-list"
+                >
+
+                    <div
+                            th:each="friend : ${friends}"
+                            class="friend"
+                            th:data-username="${friend.friend.username}"
+                            th:data-nickname="${friend.friend.nickname}"
+                    >
+
+                        <label>
+
+                            <input
+                                    type="checkbox"
+                                    name="friendUsername"
+                                    th:value="${friend.friend.username}"
+                                    class="friend-checkbox"
+                            >
+
+
+                            <span
+                                    class="friend-nickname"
+                                    th:text="${friend.friend.nickname}"
+                            >
+                                닉네임
+                            </span>
+
+
+                            <span
+                                    class="friend-username"
+                                    th:text="'(' + ${friend.friend.username} + ')'"
+                            >
+                                (아이디)
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 선택된 친구 수 -->
+                <div class="selected-info">
+
+                    선택한 친구
+
+                    <span
+                            id="selectedCount"
+                            class="selected-count"
+                    >
+                        0
+                    </span>
+
+                    명
+
+                </div>
+
+            </div>
+
+
+            <!-- CSRF -->
+            <input
+                    type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}"
+            >
+
+
+            <!-- 버튼 -->
+            <div class="button-container">
+
+                <a
+                        href="/main"
+                        class="button back-button"
+                >
+                    뒤로가기
+                </a>
+
+
+                <button
+                        type="submit"
+                        class="button create-button"
+                >
+                    채팅방 만들기
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const searchInput =
+        document.getElementById("friendSearch");
+
+    const friends =
+        document.querySelectorAll(".friend");
+
+    const friendCheckboxes =
+        document.querySelectorAll(".friend-checkbox");
+
+    const selectedCount =
+        document.getElementById("selectedCount");
+
+    const directType =
+        document.getElementById("directType");
+
+    const groupType =
+        document.getElementById("groupType");
+
+    const roomForm =
+        document.getElementById("roomForm");
+
+
+    // 친구 검색
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            const keyword =
+                this.value.toLowerCase();
+
+
+            friends.forEach(friend => {
+
+                const username =
+                    friend.dataset.username.toLowerCase();
+
+                const nickname =
+                    friend.dataset.nickname.toLowerCase();
+
+
+                if (
+                    username.includes(keyword) ||
+                    nickname.includes(keyword)
+                ) {
+
+                    friend.style.display = "";
+
+                } else {
+
+                    friend.style.display = "none";
+
+                }
+
+            });
+
+        }
+    );
+
+
+    // 선택한 친구 수 업데이트
+    function updateSelectedCount() {
+
+        const checked =
+            document.querySelectorAll(
+                ".friend-checkbox:checked"
+            );
+
+
+        selectedCount.textContent =
+            checked.length;
+
+    }
+
+
+    // 친구 선택
+    friendCheckboxes.forEach(
+        checkbox => {
+
+            checkbox.addEventListener(
+                "change",
+                function () {
+
+                    /*
+                     * 1:1 채팅에서는
+                     * 한 명만 선택할 수 있음
+                     */
+                    if (
+                        directType.checked &&
+                        this.checked
+                    ) {
+
+                        friendCheckboxes.forEach(
+                            other => {
+
+                                if (other !== this) {
+                                    other.checked = false;
+                                }
+
+                            }
+                        );
+
+                    }
+
+
+                    updateSelectedCount();
+
+                }
+            );
+
+        }
+    );
+
+
+    // 1:1 채팅 선택
+    directType.addEventListener(
+        "change",
+        function () {
+
+            if (this.checked) {
+
+                friendCheckboxes.forEach(
+                    checkbox => {
+                        checkbox.checked = false;
+                    }
+                );
+
+                updateSelectedCount();
+
+            }
+
+        }
+    );
+
+
+    // 단체 채팅 선택
+    groupType.addEventListener(
+        "change",
+        function () {
+
+            updateSelectedCount();
+
+        }
+    );
+
+
+    // 채팅방 생성 전 친구 선택 확인
+    roomForm.addEventListener(
+        "submit",
+        function (event) {
+
+            const checked =
+                document.querySelectorAll(
+                    ".friend-checkbox:checked"
+                );
+
+
+            if (checked.length === 0) {
+
+                event.preventDefault();
+
+                alert(
+                    "채팅할 친구를 한 명 이상 선택해주세요."
+                );
+
+                return;
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

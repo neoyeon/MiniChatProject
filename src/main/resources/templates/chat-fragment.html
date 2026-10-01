@@ -1,0 +1,89 @@
+<div
+        class="chat-container"
+        xmlns:th="http://www.thymeleaf.org">
+
+    <!-- 채팅방 제목 -->
+
+    <div class="chat-header">
+
+        <button type="button" class="back-button" aria-label="대화 목록으로" onclick="backToRooms()">‹</button>
+
+        <div class="avatar" th:text="${#strings.substring(room.name,0,1)}">T</div>
+
+        <h2
+                th:text="${room.name}">
+
+            채팅방 이름
+
+        </h2>
+
+    </div>
+
+
+
+    <!-- 메시지 영역 -->
+
+    <div
+            id="messageArea"
+            class="message-area">
+
+
+        <!-- 기존 메시지 -->
+
+        <th:block th:each="message, status : ${messages}">
+        <div class="date-divider"
+             th:if="${status.first or #temporals.format(messages[status.index - 1].createdAt, 'yyyy.MM.dd') != #temporals.format(message.createdAt, 'yyyy.MM.dd')}"
+             th:text="${#temporals.format(message.createdAt, 'yyyy.MM.dd')}">2026.09.28</div>
+        <div class="message"
+             th:attr="data-date=${#temporals.format(message.createdAt, 'yyyy.MM.dd')}"
+             th:classappend="${message.user.username == currentUsername} ? ' my-message' : ' other-message'">
+            <time class="message-time" th:if="${message.user.username == currentUsername}" th:text="${#temporals.format(message.createdAt, 'HH:mm')}">00:00</time>
+            <div class="message-body">
+                <span class="message-nickname" th:if="${message.user.username != currentUsername}" th:text="${message.user.nickname}">닉네임</span>
+                <span class="message-bubble" th:text="${message.content}">메시지</span>
+            </div>
+            <time class="message-time" th:if="${message.user.username != currentUsername}" th:text="${#temporals.format(message.createdAt, 'HH:mm')}">00:00</time>
+
+        </div>
+        </th:block>
+
+
+
+        <!-- 메시지가 없을 때 -->
+
+        <div
+                th:if="${messages == null or messages.isEmpty()}"
+                id="emptyMessage"
+                class="empty-message">
+
+            아직 메시지가 없습니다.
+
+        </div>
+
+    </div>
+
+
+
+    <!-- 메시지 입력 -->
+
+    <div class="chat-input-area">
+
+        <input
+                type="text"
+                id="messageInput"
+                placeholder="메시지를 입력하세요."
+                autocomplete="off">
+
+
+        <button
+                type="button"
+                id="sendButton">
+
+            전송
+
+        </button>
+
+    </div>
+
+
+</div>

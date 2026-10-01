@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TATAOTALK · 메시지</title>
+    <style>
+        :root{font-family:Inter,"Pretendard","Noto Sans KR",Arial,sans-serif;color:#202124;background:#f6f7f9;font-synthesis:none;--accent:#5265e8;--muted:#89909d;--line:#edf0f4}
+        *{box-sizing:border-box}body{margin:0;min-width:320px;height:100vh;overflow:hidden}.app{height:100%;max-width:1600px;margin:auto;display:grid;grid-template-columns:72px 330px minmax(0,1fr);background:#fff;box-shadow:0 12px 60px #202a3a12}
+        .rail{background:#252b3b;display:flex;align-items:center;flex-direction:column;padding:24px 0;gap:14px}.brand-mark{width:42px;height:42px;border-radius:14px;background:#fff;color:#5265e8;display:grid;place-items:center;font-weight:900;font-size:18px;margin-bottom:26px}.rail-button{width:44px;height:44px;border:0;border-radius:14px;color:#aeb5c5;background:transparent;font-size:20px;cursor:pointer;transition:.18s}.rail-button:hover,.rail-button.active{color:#fff;background:#ffffff20}.rail-spacer{flex:1}.rail-link{color:#aeb5c5;text-decoration:none;font-size:19px;padding:10px}
+        .sidebar{min-width:0;border-right:1px solid var(--line);display:flex;flex-direction:column}.profile{display:flex;align-items:center;gap:12px;padding:22px 20px;border-bottom:1px solid var(--line)}.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none;background:#e9ebff;color:#5265e8;font-weight:800}.profile-copy{min-width:0;flex:1}.profile-copy strong,.profile-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.profile-copy strong{font-size:14px}.profile-copy small{margin-top:4px;color:var(--muted);font-size:12px}.signout{border:0;background:transparent;padding:5px 0;color:#777f8d;font:inherit;font-size:12px;cursor:pointer}.signout:hover{color:#5265e8}.panel{display:flex;flex-direction:column;min-height:0;flex:1}.panel[hidden]{display:none}.panel-heading{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 15px}.panel-heading h1{font-size:20px;margin:0;letter-spacing:-.5px}.count{font-size:12px;color:var(--muted);background:#f2f3f6;border-radius:20px;padding:4px 9px}
+        .search-form{display:flex;margin:0 16px 14px;background:#f5f6f8;border:1px solid transparent;border-radius:11px}.search-form:focus-within{border-color:#cdd3ff;background:#fff}.search-form input{min-width:0;flex:1;border:0;outline:0;background:transparent;padding:11px 12px;font-size:13px}.search-form button{border:0;background:transparent;padding:0 12px;color:#7e8592;cursor:pointer}.search-result{margin:0 16px 12px;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:13px}.search-user{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px}.search-username,.subtle{color:var(--muted)}.add-friend-button{width:100%;border:0;border-radius:8px;background:var(--accent);color:#fff;font-weight:700;padding:10px;cursor:pointer}.search-message{color:#7f8794;line-height:1.5}
+        .list-label{padding:8px 20px;color:#9aa0aa;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:1.2px}.list-area{overflow:auto;padding:0 10px 14px;flex:1}.list-row{width:100%;display:flex;align-items:center;gap:11px;padding:11px 10px;margin-bottom:3px;border:0;border-radius:11px;background:transparent;text-align:left;cursor:pointer;color:inherit}.list-row:hover,.list-row.selected{background:#f3f4ff}.list-row.selected{box-shadow:inset 3px 0 var(--accent)}.list-row .avatar{width:40px;height:40px;font-size:13px}.list-copy{min-width:0;flex:1}.list-copy strong,.list-copy small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.list-copy strong{font-size:13px;font-weight:700}.list-copy small{font-size:11px;color:var(--muted);margin-top:4px}.initial{background:#e9f5ef;color:#38956c}.empty-list{padding:25px 14px;text-align:center;color:#9aa0aa;font-size:13px;line-height:1.7}
+        .create-link{display:flex;justify-content:center;align-items:center;margin:12px 16px 18px;padding:12px;border-radius:10px;background:#252b3b;color:white;text-decoration:none;font-size:13px;font-weight:700}.create-link:hover{background:#343c51}.chat-area{min-width:0;height:100%;background:#fff}.empty-chat{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#8a909c}.empty-icon{width:76px;height:76px;border-radius:24px;background:#f0f1ff;color:#6674e9;display:grid;place-items:center;font-size:32px;margin-bottom:20px}.empty-chat h2{margin:0 0 8px;color:#343946;font-size:20px}.empty-chat p{margin:0;font-size:14px;line-height:1.7}.chat-container{height:100%;display:flex;flex-direction:column}.chat-header{height:76px;padding:0 28px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);flex:none}.chat-header .avatar{width:42px;height:42px}.chat-header h2{font-size:15px;margin:0}.chat-header p{font-size:11px;color:var(--muted);margin:4px 0 0}.message-area{flex:1;overflow:auto;padding:22px clamp(16px,4vw,54px);background:#fbfcfe}.message{display:flex;align-items:flex-end;gap:8px;margin:12px 0;color:#272a32;font-size:13px}.my-message{justify-content:flex-end}.other-message{justify-content:flex-start}.message-body{display:flex;flex-direction:column;max-width:min(72%,520px)}.my-message .message-body{align-items:flex-end}.message-nickname{margin:0 0 5px 2px;font-size:11px;color:#747b88}.message-bubble{padding:11px 14px;border-radius:16px 16px 16px 4px;background:#fff;border:1px solid #edf0f4;overflow-wrap:anywhere;line-height:1.55;box-shadow:0 2px 5px #1d273008}.my-message .message-bubble{background:#5969e9;color:#fff;border-color:#5969e9;border-radius:16px 16px 4px 16px}.message-time{flex:none;margin-bottom:3px;color:#a0a5ae;font-size:10px}.date-divider{width:fit-content;margin:18px auto;padding:6px 11px;border-radius:20px;background:#eef0f5;color:#7e8592;font-size:10px}.empty-message{text-align:center;margin:35px auto;color:#989eaa;font-size:13px}.chat-input-area{display:flex;gap:10px;padding:15px 20px;border-top:1px solid var(--line);background:#fff}.chat-input-area input{flex:1;min-width:0;height:46px;padding:0 15px;border:1px solid #e5e8ed;border-radius:12px;outline:0;font-size:13px}.chat-input-area input:focus{border-color:#aeb6ff;box-shadow:0 0 0 3px #5969e914}.chat-input-area button{width:76px;border:0;border-radius:12px;background:#5969e9;color:white;font-size:13px;font-weight:700;cursor:pointer}.chat-input-area button:hover{background:#4657db}
+        @media(max-width:760px){body{height:100dvh}.app{grid-template-columns:56px minmax(0,1fr)}.rail{padding-top:16px}.brand-mark{width:36px;height:36px;margin-bottom:18px}.rail-button{width:40px;height:40px}.sidebar{border-right:0}.chat-area{display:none}.app.chat-open .sidebar{display:none}.app.chat-open .chat-area{display:block;grid-column:2}.chat-header{height:66px;padding:0 16px}.chat-input-area{padding:12px}.chat-input-area button{width:64px}.message-area{padding:18px 14px}.back-button{display:grid!important}}
+        .back-button{display:none;border:0;border-radius:50%;width:34px;height:34px;background:#f3f4f7;color:#424858;font-size:18px;cursor:pointer}
+        .friend-row{cursor:default}.friend-row:hover{background:#f7f8fb}.friend-chat-form{margin:0}.friend-chat-button{border:1px solid #dfe3f3;border-radius:8px;background:#fff;color:#5969e9;padding:7px 10px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}.friend-chat-button:hover{background:#5969e9;color:#fff;border-color:#5969e9}
+        .my-message .message-bubble{color:#111}.date-divider{display:flex;align-items:center;gap:14px;width:100%;margin:18px 0;padding:0;border:0;border-radius:0;background:transparent;color:#7e8592;font-size:10px;white-space:nowrap}.date-divider::before,.date-divider::after{content:"";flex:1;height:1px;background:#dfe3ea}
+        .rail,.sidebar{height:100%;min-height:0;overflow:hidden;overscroll-behavior:contain}.panel{min-height:0;overflow:hidden}.list-area,.message-area{min-height:0;overscroll-behavior:contain;overflow-anchor:none}
+        .chat-area{overflow:hidden}.chat-container{min-height:0;overflow:hidden}.chat-header{flex:0 0 auto}.message-area{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}.chat-input-area{position:sticky;bottom:0;z-index:2;flex:0 0 auto;padding-bottom:max(15px,env(safe-area-inset-bottom));}
+    </style>
+</head>
+<body>
+<main class="app" id="app">
+    <nav class="rail" aria-label="메뉴">
+        <div class="brand-mark" aria-label="Tataotalk">T</div>
+        <button class="rail-button active" id="friendsTab" type="button" aria-label="친구" title="친구" onclick="showFriends()">♙</button>
+        <button class="rail-button" id="roomsTab" type="button" aria-label="채팅" title="채팅" onclick="showRooms()">▤</button>
+        <div class="rail-spacer"></div>
+        <form action="/logout" method="post" title="로그아웃" aria-label="로그아웃">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="rail-button" type="submit" aria-label="로그아웃">↪</button>
+        </form>
+    </nav>
+    <aside class="sidebar">
+        <div class="profile">
+            <div class="avatar" th:text="${#strings.substring(currentUsername,0,1).toUpperCase()}">나</div>
+            <div class="profile-copy"><strong th:text="${currentUsername}">내 계정</strong><small>내 계정</small></div>
+            <form action="/logout" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="signout" type="submit">로그아웃</button>
+            </form>
+        </div>
+        <section class="panel" id="friendPanel">
+            <div class="panel-heading"><h1>친구</h1><span class="count" th:text="${friends.size()}">0</span></div>
+            <form action="/main/friend/search" method="get" class="search-form">
+                <input type="search" name="username" th:value="${searchUsername}" placeholder="아이디로 친구 찾기" autocomplete="off" required aria-label="아이디로 친구 찾기">
+                <button type="submit" aria-label="검색">⌕</button>
+            </form>
+            <div th:if="${searchUsername != null}" class="search-result">
+                <div th:if="${searchResult != null}">
+                    <div class="search-user"><strong th:text="${searchResult.nickname}">닉네임</strong><span class="search-username" th:text="'@' + ${searchResult.username}">@id</span></div>
+                    <div th:if="${searchResult.username == currentUsername}" class="search-message">자기 자신은 친구로 추가할 수 없습니다.</div>
+                    <div th:if="${searchResult.username != currentUsername and alreadyFriend}" class="search-message">이미 친구로 등록되어 있어요.</div>
+                    <form th:if="${searchResult.username != currentUsername and !alreadyFriend}" action="/main/friend/add" method="post">
+                        <input type="hidden" name="username" th:value="${searchResult.username}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit" class="add-friend-button">친구 추가</button>
+                    </form>
+                </div>
+                <div th:if="${searchResult == null}" class="search-message">해당 아이디의 사용자를 찾지 못했어요.</div>
+            </div>
+            <div class="list-label">내 친구</div>
+            <div class="list-area">
+                <div th:if="${friends != null and !friends.isEmpty()}" th:each="friend : ${friends}" class="list-row friend-row">
+                    <div class="avatar initial" th:text="${#strings.substring(friend.friend.nickname,0,1)}">친</div>
+                    <div class="list-copy"><strong th:text="${friend.friend.nickname}">친구 이름</strong><small th:text="'@' + ${friend.friend.username}">@username</small></div>
+                    <form action="/main/friend/chat" method="post" class="friend-chat-form">
+                        <input type="hidden" name="username" th:value="${friend.friend.username}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit" class="friend-chat-button">1:1</button>
+                    </form>
+                </div>
+                <div th:if="${friends == null or friends.isEmpty()}" class="empty-list">아직 친구가 없어요.<br>아이디를 검색해 친구를 추가해 보세요.</div>
+            </div>
+        </section>
+        <section class="panel" id="roomPanel" hidden>
+            <div class="panel-heading"><h1>채팅</h1><span class="count" th:text="${rooms.size()}">0</span></div>
+            <a href="/main/make" class="create-link">＋ 새 채팅 시작하기</a>
+            <div class="list-label">대화 목록</div>
+            <div class="list-area">
+                <button th:if="${rooms != null and !rooms.isEmpty()}" th:each="room : ${rooms}" type="button" class="list-row room-item" th:attr="data-room-id=${room.id}" onclick="selectRoom(this.dataset.roomId)">
+                    <div class="avatar" th:text="${#strings.substring(room.name,0,1)}">T</div>
+                    <div class="list-copy"><strong th:text="${room.name}">채팅방 이름</strong><small th:text="${room.type.name() == 'DIRECT' ? '1:1 대화' : '그룹 대화'}">대화</small></div>
+                </button>
+                <div th:if="${rooms == null or rooms.isEmpty()}" class="empty-list">참여 중인 채팅방이 없어요.<br>친구를 초대해 대화를 시작해 보세요.</div>
+            </div>
+        </section>
+    </aside>
+    <section class="chat-area" id="chatArea" aria-live="polite">
+        <div class="empty-chat"><div class="empty-icon">✉</div><h2>대화를 시작해 보세요</h2><p>채팅 메뉴에서 대화방을 선택하면<br>친구와 실시간으로 메시지를 주고받을 수 있어요.</p></div>
+    </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:inline="javascript">
+    const currentUsername = /*[[${currentUsername}]]*/ '';
+    const openRoomId = /*[[${openRoomId}]]*/ null;
+    const app = document.getElementById('app');
+    const chatArea = document.getElementById('chatArea');
+    let currentRoomId = null;
+    let stompClient = null;
+    let currentSubscription = null;
+    let connectionPromise = null;
+
+    function showFriends(){document.getElementById('friendPanel').hidden=false;document.getElementById('roomPanel').hidden=true;document.getElementById('friendsTab').classList.add('active');document.getElementById('roomsTab').classList.remove('active');app.classList.remove('chat-open');}
+    function showRooms(){document.getElementById('friendPanel').hidden=true;document.getElementById('roomPanel').hidden=false;document.getElementById('friendsTab').classList.remove('active');document.getElementById('roomsTab').classList.add('active');}
+    function backToRooms(){app.classList.remove('chat-open');showRooms();}
+    function connectWebSocket(){
+        if(connectionPromise)return connectionPromise;
+        connectionPromise=new Promise((resolve,reject)=>{
+            const socket=new SockJS('/ws');stompClient=Stomp.over(socket);stompClient.debug=()=>{};
+            stompClient.connect({},()=>resolve(),error=>{connectionPromise=null;reject(error);});
+        });return connectionPromise;
+    }
+    async function selectRoom(roomId){
+        currentRoomId=Number(roomId);app.classList.add('chat-open');
+        document.querySelectorAll('.room-item').forEach(item=>item.classList.toggle('selected',item.dataset.roomId===String(roomId)));
+        chatArea.innerHTML='<div class="empty-chat"><div class="empty-icon">…</div><h2>대화를 불러오는 중</h2></div>';
+        try{
+            const [response]=await Promise.all([fetch('/main/room/'+roomId+'/fragment'),connectWebSocket()]);
+            if(!response.ok)throw new Error('채팅방을 불러오지 못했습니다.');
+            const html=await response.text();if(currentRoomId!==Number(roomId))return;
+            chatArea.innerHTML=html;
+            if(currentSubscription)currentSubscription.unsubscribe();
+            currentSubscription=stompClient.subscribe('/topic/room/'+roomId,frame=>addMessage(JSON.parse(frame.body)));
+            setupChatInput();
+        }catch(error){console.error(error);chatArea.innerHTML='<div class="empty-chat"><div class="empty-icon">!</div><h2>대화방에 연결할 수 없어요</h2><p>잠시 후 다시 선택해 주세요.</p></div>';}
+    }
+    function setupChatInput(){const input=document.getElementById('messageInput'),button=document.getElementById('sendButton');if(!input||!button)return;button.addEventListener('click',sendMessage);input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}});input.focus({preventScroll:true});const area=document.getElementById('messageArea');area.scrollTop=area.scrollHeight;}
+    function sendMessage(){const input=document.getElementById('messageInput');if(!input)return;const content=input.value.trim();if(!content)return;if(!stompClient?.connected){alert('서버와 연결되지 않았습니다.');return;}stompClient.send('/app/chat.send',{},JSON.stringify({roomId:currentRoomId,content}));input.value='';input.focus({preventScroll:true});}
+    function addMessage(message){const area=document.getElementById('messageArea');if(!area||Number(message.roomId)!==currentRoomId)return;document.getElementById('emptyMessage')?.remove();const date=new Date(message.createdAt);const key=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('.');const previous=area.querySelector('.message:last-of-type');if(previous?.dataset.date!==key){const divider=document.createElement('div');divider.className='date-divider';divider.textContent=key;area.appendChild(divider);}const own=message.sender===currentUsername;const row=document.createElement('div');row.className='message '+(own?'my-message':'other-message');row.dataset.date=key;const time=document.createElement('time');time.className='message-time';time.textContent=String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');const body=document.createElement('div');body.className='message-body';if(!own){const name=document.createElement('span');name.className='message-nickname';name.textContent=message.nickname;body.appendChild(name);}const bubble=document.createElement('span');bubble.className='message-bubble';bubble.textContent=message.content;body.appendChild(bubble);if(own)row.append(time,body);else row.append(body,time);area.appendChild(row);area.scrollTop=area.scrollHeight;}
+    connectWebSocket().catch(error=>console.error('실시간 연결에 실패했습니다.',error));
+    if(openRoomId!==null){showRooms();selectRoom(openRoomId);}
+</script>
+</body>
+</html>
